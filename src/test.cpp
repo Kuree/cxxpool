@@ -381,6 +381,22 @@ TEST(push_with_non_move_functor) {
 //    ASSERT_EQUAL(42, future.get());
 //}
 
+template<typename T>
+struct helper {
+    T x;
+    int operator()() const {
+        return x();
+    }
+};
+
+TEST(push_with_non_copy_argument_workaround) {
+    cxxpool::thread_pool pool{1};
+    non_copy_functor arg;
+    helper<non_copy_functor> help{std::move(arg)};
+    auto future = pool.push(std::move(help));
+    ASSERT_EQUAL(42, future.get());
+}
+
 TEST(push_with_non_move_argument) {
     cxxpool::thread_pool pool{1};
     non_move_functor arg;
