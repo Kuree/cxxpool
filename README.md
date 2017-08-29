@@ -40,4 +40,4 @@ int main() {
 ## Feedback
 
 Contact me if you have any questions or suggestions to make this a better library!
-You can reach me at `chr.blume@gmail.com`
+Email me at `chr.blume@gmail.com` or create a GitHub issue.
