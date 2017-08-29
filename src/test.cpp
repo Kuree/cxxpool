@@ -369,9 +369,7 @@ TEST(push_with_non_copy_functor) {
 TEST(push_with_non_move_functor) {
     cxxpool::thread_pool pool{1};
     non_move_functor functor;
-    // Would be nice to have this (not working because of std::bind):
-    // pool.push(std::move(functor));
-    auto future = pool.push([functor] { return functor(); });
+    auto future = pool.push(std::ref(functor));
     ASSERT_EQUAL(43, future.get());
 }
 
