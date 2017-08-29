@@ -337,6 +337,59 @@ TEST(test_clear) {
   ASSERT_EQUAL(0u, pool.n_tasks());
 }
 
+struct non_copy_functor {
+    non_copy_functor() = default;
+    non_copy_functor(const non_copy_functor&) = delete;
+    non_copy_functor& operator=(const non_copy_functor&) = delete;
+    non_copy_functor(non_copy_functor&&) = default;
+    non_copy_functor& operator=(non_copy_functor&&) = default;
+    int operator()() const {
+        return 42;
+    }
+};
+
+struct non_move_functor {
+    non_move_functor() = default;
+    non_move_functor(const non_move_functor&) = default;
+    non_move_functor& operator=(const non_move_functor&) = default;
+    non_move_functor(non_move_functor&&) = delete;
+    non_move_functor& operator=(non_move_functor&&) = delete;
+    int operator()() const {
+        return 43;
+    }
+};
+
+TEST(push_with_non_copy_functor) {
+    cxxpool::thread_pool pool{1};
+    non_copy_functor functor;
+    auto future = pool.push(std::move(functor));
+    ASSERT_EQUAL(42, future.get());
+}
+
+TEST(push_with_non_move_functor) {
+    cxxpool::thread_pool pool{1};
+    non_move_functor functor;
+    // Would be nice to have this (not working because of std::bind):
+    // pool.push(std::move(functor));
+    auto future = pool.push([functor] { return functor(); });
+    ASSERT_EQUAL(43, future.get());
+}
+
+// Would be nice to have this (not working because of std::bind):
+//TEST(push_with_non_copy_argument) {
+//    cxxpool::thread_pool pool{1};
+//    non_copy_functor arg;
+//    auto future = pool.push([](non_copy_functor x) { return x(); }, std::move(arg));
+//    ASSERT_EQUAL(42, future.get());
+//}
+
+TEST(push_with_non_move_argument) {
+    cxxpool::thread_pool pool{1};
+    non_move_functor arg;
+    auto future = pool.push([](non_move_functor x) { return x(); }, std::ref(arg));
+    ASSERT_EQUAL(43, future.get());
+}
+
 COLLECTION(test_examples) {
 
 TEST(basic_with_three_tasks) {

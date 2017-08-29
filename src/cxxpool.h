@@ -290,15 +290,15 @@ public:
     // Pushes a new task into the thread pool and returns the associated future.
     // The task will have a priority of 0
     template<typename Functor, typename... Args>
-    auto push(Functor&& functor, Args&&... args) -> std::future<decltype(functor(args...))> {
+    auto push(Functor&& functor, Args&&... args) -> std::future<typename std::result_of<Functor(Args...)>::type> {
         return push(0, std::forward<Functor>(functor), std::forward<Args>(args)...);
     }
 
     // Pushes a new task into the thread pool while providing a priority and
     // returns the associated future. Higher priorities are processed first
     template<typename Functor, typename... Args>
-    auto push(std::size_t priority, Functor&& functor, Args&&... args) -> std::future<decltype(functor(args...))> {
-        typedef decltype(functor(args...)) result_type;
+    auto push(std::size_t priority, Functor&& functor, Args&&... args) -> std::future<typename std::result_of<Functor(Args...)>::type> {
+        using result_type = typename std::result_of<Functor(Args...)>::type;
         auto pack_task = std::make_shared<std::packaged_task<result_type()>>(
                 std::bind(std::forward<Functor>(functor), std::forward<Args>(args)...));
         auto future = pack_task->get_future();
