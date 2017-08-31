@@ -37,6 +37,23 @@ int main() {
 }
 ```
 
+## Running the tests
+
+You'll need:
+* [libunittest](http://libunittest.sourceforge.net/)
+* [cppcheck](http://cppcheck.sourceforge.net/) 
+* [valgrind](http://valgrind.org/) 
+
+If you're on Mac or Linux, just do:
+```
+./make_check.sh [compiler]
+```
+where compiler defaults to `g++` and can also be `clang++`.
+
+If you're using Visual Studio you will have to set up a project
+manually to run all tests.
+
+
 ## Feedback
 
 Contact me if you have any questions or suggestions to make this a better library!
