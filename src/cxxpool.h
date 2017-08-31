@@ -264,7 +264,7 @@ public:
             std::lock_guard<std::mutex> thread_lock(thread_mutex_);
             const auto n_target = threads_.size() + n_threads;
             while (threads_.size() < n_target) {
-                std::thread thread(&thread_pool::worker, this);
+                std::thread thread{&thread_pool::worker, this};
                 try {
                     threads_.push_back(std::move(thread));
                 } catch (...) {
@@ -365,6 +365,7 @@ private:
         std::lock_guard<std::mutex> thread_lock(thread_mutex_);
         for (auto& thread : threads_)
             thread.join();
+        threads_.clear();
     }
 
     bool done_;
