@@ -44,9 +44,9 @@ void wait(Iterator first, Iterator last) {
 // returns a container of std::future::status
 template<typename Result, typename Iterator, typename Rep, typename Period>
 inline
-Result wait_for(Iterator first, Iterator last,
-                const std::chrono::duration<Rep, Period>& timeout_duration,
-                Result result) {
+Result &wait_for(Iterator first, Iterator last,
+                 const std::chrono::duration<Rep, Period>& timeout_duration,
+                 Result &result) {
     for (; first != last; ++first)
         result.push_back(first->wait_for(timeout_duration));
     return result;
@@ -67,9 +67,9 @@ std::vector<std::future_status> wait_for(Iterator first, Iterator last,
 // returns a container of std::future::status
 template<typename Result, typename Iterator, typename Clock, typename Duration>
 inline
-Result wait_until(Iterator first, Iterator last,
-                  const std::chrono::time_point<Clock, Duration>& timeout_time,
-                  Result result) {
+Result &wait_until(Iterator first, Iterator last,
+                   const std::chrono::time_point<Clock, Duration>& timeout_time,
+                   Result &result) {
     for (; first != last; ++first)
         result.push_back(first->wait_until(timeout_time));
     return result;
@@ -100,7 +100,7 @@ void get(Iterator first, Iterator last) {
 template<typename Result, typename Iterator,
          typename = typename std::enable_if<!cxxpool::detail::future_info<Iterator>::is_void>::type>
 inline
-Result get(Iterator first, Iterator last, Result result) {
+Result &get(Iterator first, Iterator last, Result &result) {
     for (; first != last; ++first)
         result.push_back(first->get());
     return result;
